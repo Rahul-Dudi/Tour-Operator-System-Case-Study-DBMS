@@ -1,0 +1,204 @@
+create table Person
+(
+	Id number,
+	FName varchar2(10) not null,
+	LName varchar2(10) not null,
+	Sex char(1),
+	Age number check(> 0),
+	street varchar(10) not null,
+	City varchar2(10) not null,
+	State varchar2(10) not null,
+	country varchar2(10) not null,
+	constraint Person_pk primary key(Id)
+);
+
+create table Mobile_number
+(
+	Id number,
+	MNumber number,
+	constraint Mobile_number_pk primary key(Id, MNumber),
+	constraint Mobile_number_fk foreign key(Id) references Person(Id) on delete cascade
+);
+
+create table Email
+(
+	Id number,
+	Email varchar2(10),
+	constraint Email_pk primary key(Id,Email),
+	constraint Email_fk foreign key(Id) references Person(Id) on delete cascade
+);
+
+create table mailing_address_phone_number
+(
+	Id number,
+	PNumber number,
+	constraint mailing_address_phone_number_pk primary key(Id, PNumber),
+	constraint mailing_address_phone_number_fk foreign key(Id) references Person(Id) on delete cascade
+);
+
+
+create table mailing_address_fax_number
+(
+	Id number,
+	FNumber number,
+	constraint Fax_number_pk primary key(Id, FNumber),
+	constraint Fax_number_fk foreign key(Id) references Person(Id) on delete cascade
+);
+
+
+
+create table Secondary_Address
+(
+	ID number,
+	Addr_number number unique not null,
+	City varchar2(10) not null,
+	Street varchar2(10) not null,
+	State varchar2(10) not null,
+	country varchar2(10) not null,
+	constraint secondary_Address_pk primary key(Id, Addr_number),
+	constraint secondary_Address_fk foreign key(Id) references Person(Id) on delete cascade
+);
+
+create table Secondary_Phone_number
+(
+	Id number,
+	Addr_Id number,
+	PNumber number,
+	constraint Secondary_Phone_number_pk primary key(Id, Addr_Id, pnumber),
+	constraint Secondary_Phone_number_fk foreign key(Id) references Person(Id) on delete cascade ,
+	constraint Secondary_Phone_number_fk2 foreign key(Addr_Id) references Address(Addr_Id) on delete cascade
+);
+
+create table Secondary_Fax_number
+(
+	Id number,
+	Addr_Id number,
+	FNumber number,
+	constraint Secondary_Fax_number_pk primary key(Id, Addr_ID, fnumber),
+	constraint Secondary_Fax_number_fk foreign key(Id) references Person(Id) on delete cascade,
+	constraint Secondary_Fax_number_fk2 foreign key(Addr_Id) references Address(Addr_Id) on delete cascade
+);
+
+create table Tour
+(
+	Tour_id number,
+	Status varchar(10) not null,
+	Itenary varchar(10) not null,
+	constraint Tour_pk primary key(Tour_id)
+);
+
+create table Customer
+(
+	Id number,
+	Tour_Id number,
+	constraint Customer_pk primary key(Id, Tour_id),
+	constraint Customer_fk foreign key(Id) references Person(Id) on delete cascade,
+	constraint Customer_fk2 foreign key(Tour_Id) references Tour(Tour_id) on delete cascade
+);
+
+create table Guide
+(
+	Id number,
+	Commisssion number,
+	Contract_Id number,
+	Tour_Id number,
+	constraint Guide_pk primary key(Id, Contract_id),
+	constraint Guide_fk foreign key(Id) references Person(Id) on delete cascade,
+	constraint Guide_fk2 foreign key(Tour_Id) references Tour(Tour_id) on delete cascade
+);
+
+create table Employee
+(
+	Id number,
+	Salary number,
+	DOD date,
+	constraint Employee_pk primary key(Id),
+	constraint Employee_fk foreign key(Id) references Person(Id) on delete cascade
+);
+
+create table manages
+(
+	Id number,
+	Tour_id number,
+	constraint Manages_pk primary key(Id,Tour_id),
+	constraint Manages_fk foreign key(Id) references Employee(id) on delete cascade,
+	constraint Manages_fk2 foreign key(Tour_id) references Tour(Tour_id) on delete cascade
+);
+
+
+create table service_place
+(
+	Provider_id number,
+	Type varchar2(10),
+	Address varchar2(20) not null,
+	constraint Service_place_pk primary key(Provider_id),
+);
+
+create table tour_service
+(
+	Tour_id number,
+	Provider_id number,
+	constraint tour_service_pk primary key(Tour_id, Provider_id),
+	constraint tour_service_fk foreign key(Tour_id) references Tour(tour_id) on delete cascade,
+	constraint tour_service_fk2 foreign key(Provider_id) references service_place(provider_id) on delete cascade,
+
+create table contract
+(
+	Contract_id number,
+	Period number not null,
+	Start_date date not null,
+	Contract_type varchar2(10) not null,
+	min_people number check( min_people >0),
+	max_people number check(max_people >0),
+	Penalty number,
+	Charge number,
+	Pricing_type varchar2(10) not null,
+	constraint contract_pk primary key(contract_id)
+);
+
+create table formed_contract
+(
+	Id number,
+	Provider_id number,
+	contract_id number,
+	constraint formed_contract_pk primary key(Id,Provider_id, contract_id),
+	constraint formed_contract_fk foreign key(Id) references Employee(id) on delete cascade,
+	constraint formed_contract_fk2 foreign key(Provider_id) references Service_Place(Provider_id) on delete cascade,
+	constraint formed_contract_fk3 foreign key(contract_id) references Contract(contract_id) on delete cascade
+);
+
+create table attraction_category
+(
+	category varchar2(5),
+	Opening_month number check (>0 and < 13),
+	Closing_month number check (>0 and < 13),
+	contraint attraction_category_pk primary key(category)
+);
+
+create table location
+(
+	Location_id number,
+	Name varchar2(10),
+	Climate varchar2(10),
+	contraint location_pk primary key(location_id)
+);
+
+create table attraction
+(
+	Location_id number,
+	Category varchar2(5),
+	constraint attraction_pk primary key(location_id, category),
+	constraint attraction_fk foreign key(Location_id) references location(Location_id) on delete cascade,
+	constraint attraction_fk2 foreign key(category) references attraction(category) on delete cascade
+);
+
+create table tour_loctaion
+(
+	Tour_id number,
+	Location_id number,
+	constraint tour_location_pk primary key(Tour_id, location_id),
+	constraint tour_location_fk foreign key(Tour_id) references tour(tour_id) on delete cascade,
+	constraint tour_location_fk foreign key(Location_id) references Location(location_id) on delete cascade
+);
+
+		

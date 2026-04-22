@@ -1,0 +1,27 @@
+1. Find the names of all the tourists who have booked a tour to a city that is also the hometown of another tourist.
+
+sql:  select FName,LName from Person where Person.Id in(
+	select Id from Customer,Tour,Location where Tour.Tour_Id = Location.Tour_id and Customer.Tour_id = Tour.Tour_id
+	and Location.Name in (select city from person));
+
+2. Find the name of all the customer who have booked a tour in the near future and are also on an ongoing tour.
+
+sql : select fname,lname from person where person.id in (select id from customer where customer.id in (select id from tour where status = "Near future")
+	intersection
+ 	select id from customer where customer.id in (select id from tour where status = "Ongoing"));
+
+3. Find the id of all the guides who are guiding an ongoing tour and also have booked a tour in the near future as a customer.
+
+sql : select id from guide where tour_id in (select tour_id from tour where tour_id in (select tour_id from guide) and status = "Ongoing");
+
+	intersection
+
+	select id from customer where tour_id in (select tour_id from tour where status= "Near future");
+
+4. Select the names of all guides who have led tours that have been booked by customers with a name that starts with 'A' and included locations that are  museums or beaches.
+
+sql :	select FName,lname from people,guide where people.id = guide.id and tour_id in (select tour_id from customer,people where People.id = customer.id and Fname like "A%" and tour_id in 	(Select tour_id from tour,location,attraction where tour.tour_id = location.tour_id and location.name = attraction.name and attraction.category = "Museums" and attraction = "Beaches" 	and tour.status = "Completed"));
+
+5. Find the name of all the employees who will be taking a tour in the near future and have a contract with a hotel who will be providing any service during that tour for one or more days     and that allows less then 10 people to have the service without any penalty.
+
+sql: Select Fname,Lname from people where id in (Select id from employee where id in (select id from customer where tour_id in (select tour_id from service_place,tour where tour.tour_id = 	service_place.tour_id and status = "Near Future" and provider_id in (Select provider_id from formed_contract,contract where Contract.contract_id = formed_contract.contract_id and 	min_people < 10 and provider_id in (select provider_id from service_place where type = "Hotel")))))
